@@ -3,6 +3,9 @@ import ICar from '../Interfaces/ICar';
 import CarService from '../Services/CarService';
 
 const HTTP_201 = 201;
+const HTTP_200 = 200;
+const HTTP_404 = 404;
+const HTTP_422 = 422;
 
 export default class CarController {
   private req: Request;
@@ -35,5 +38,71 @@ export default class CarController {
     } catch (err) {
       this.next(err);
     }
+  }
+
+  public async findAll() {
+    const foundCars = await this.service.findAll();
+    const carsFormatted = foundCars.map((e) => ({
+      id: e.id,
+      model: e.model,
+      year: e.year,
+      color: e.color,
+      status: e.status,
+      buyValue: e.buyValue,
+      doorsQty: e.doorsQty,
+      seatsQty: e.seatsQty,
+    }));
+    return this.res.status(HTTP_200).json(carsFormatted);
+  }
+
+  public async findById() {
+    const isValidId = this.service.isValidMongoId(this.req.params.id);
+    if (!isValidId) {
+      return this.res.status(HTTP_422).json({ message: 'Invalid mongo id' });
+    }
+    const foundCar = await this.service.findById(this.req.params.id);
+    if (!foundCar) {
+      return this.res.status(HTTP_404).json({ message: 'Car not found' });
+    }
+    const carFormatted = {
+      id: foundCar.id,
+      model: foundCar.model,
+      year: foundCar.year,
+      color: foundCar.color,
+      status: foundCar.status,
+      buyValue: foundCar.buyValue,
+      doorsQty: foundCar.doorsQty,
+      seatsQty: foundCar.seatsQty,
+    };
+    return this.res.status(HTTP_200).json(carFormatted);
+  }
+
+  public async findByIdAndUpdate() {
+    const isValidId = this.service.isValidMongoId(this.req.params.id);
+    if (!isValidId) {
+      return this.res.status(HTTP_422).json({ message: 'Invalid mongo id' });
+    }
+    const carUpdated = await this.service.findByIdAndUpdate(
+      this.req.params.id,
+      this.req.body,
+    );
+    if (!carUpdated) {
+      return this.res.status(HTTP_404).json({ message: 'Car not found' });
+    }
+    const carModified = await this.service.findById(this.req.params.id);
+    if (!carModified) {
+      return this.res.status(HTTP_404).json({ message: 'Something went wrong.' });
+    }
+    const carFormatted = {
+      id: carModified.id,
+      model: carModified.model,
+      year: carModified.year,
+      color: carModified.color,
+      status: carModified.status,
+      buyValue: carModified.buyValue,
+      doorsQty: carModified.doorsQty,
+      seatsQty: carModified.seatsQty,
+    };
+    return this.res.status(HTTP_200).json(carFormatted);
   }
 }
