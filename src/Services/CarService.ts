@@ -35,4 +35,9 @@ export default class CarService {
     const carODM = new CarODM();
     return carODM.findByIdAndUpdate(_id, body);
   }
+
+  public deleteById(_id: string) {
+    const carODM = new CarODM();
+    return carODM.deleteById(_id);
+  }
 }

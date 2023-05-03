@@ -1,8 +1,4 @@
 import { Model, Schema, model, models } from 'mongoose';
-// import ICar from '../Interfaces/ICar';
-// import IMotorcycle from '../Interfaces/IMotorcycle';
-// import CarODM from './CarODM';
-// import Car from '../Domains/Car';
 
 export default abstract class AbstractODM<T> {
   protected _model: Model<T>;
@@ -31,5 +27,9 @@ export default abstract class AbstractODM<T> {
     req: Partial<T>,
   ): Promise<T | null> {
     return this._model.findByIdAndUpdate(_id, req);
+  }
+
+  public async deleteById(id: string): Promise<T | null> {
+    return this._model.findByIdAndDelete(id);
   }
 }

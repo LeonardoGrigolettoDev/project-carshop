@@ -35,4 +35,9 @@ export default class MotorcycleService {
     const motorcycleODM = new MotorcycleODM();
     return motorcycleODM.findByIdAndUpdate(_id, body);
   }
+
+  public deleteById(_id: string) {
+    const motorcycleODM = new MotorcycleODM();
+    return motorcycleODM.deleteById(_id);
+  }
 }

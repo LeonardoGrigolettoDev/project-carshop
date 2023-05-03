@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 import IMotorcycle from '../Interfaces/IMotorcycle';
 import MotorcycleService from '../Services/MotorcycleService';
 
+const INVALID_MONGO_ID = 'Invalid mongo id';
+const MOTORCYCLE_NOT_FOUND = 'Motorcycle not found';
 const HTTP_201 = 201;
 const HTTP_200 = 200;
 const HTTP_404 = 404;
@@ -58,11 +60,11 @@ export default class MotorcycleController {
   public async findById() {
     const isValidId = this.service.isValidMongoId(this.req.params.id);
     if (!isValidId) {
-      return this.res.status(HTTP_422).json({ message: 'Invalid mongo id' });
+      return this.res.status(HTTP_422).json({ message: INVALID_MONGO_ID });
     }
     const foundMotorcycle = await this.service.findById(this.req.params.id);
     if (!foundMotorcycle) {
-      return this.res.status(HTTP_404).json({ message: 'Motorcycle not found' });
+      return this.res.status(HTTP_404).json({ message: MOTORCYCLE_NOT_FOUND });
     }
     const motorcycleFormatted = {
       id: foundMotorcycle.id,
@@ -80,14 +82,14 @@ export default class MotorcycleController {
   public async findByIdAndUpdate() {
     const isValidId = this.service.isValidMongoId(this.req.params.id);
     if (!isValidId) {
-      return this.res.status(HTTP_422).json({ message: 'Invalid mongo id' });
+      return this.res.status(HTTP_422).json({ message: INVALID_MONGO_ID });
     }
     const motorcycleUpdated = await this.service.findByIdAndUpdate(
       this.req.params.id,
       this.req.body,
     );
     if (!motorcycleUpdated) {
-      return this.res.status(HTTP_404).json({ message: 'Motorcycle not found' });
+      return this.res.status(HTTP_404).json({ message: MOTORCYCLE_NOT_FOUND });
     }
     const motorcycleModified = await this.service.findById(this.req.params.id);
     if (!motorcycleModified) {
@@ -102,6 +104,28 @@ export default class MotorcycleController {
       buyValue: motorcycleModified.buyValue,
       category: motorcycleModified.category,
       engineCapacity: motorcycleModified.engineCapacity,
+    };
+    return this.res.status(HTTP_200).json(motorcycleFormatted);
+  }
+
+  public async deleteById() {
+    const isValidId = this.service.isValidMongoId(this.req.params.id);
+    if (!isValidId) {
+      return this.res.status(HTTP_422).json({ message: INVALID_MONGO_ID });
+    }
+    const deleted = await this.service.deleteById(this.req.params.id);
+    if (!deleted) {
+      return this.res.status(HTTP_404).json({ message: MOTORCYCLE_NOT_FOUND });
+    }
+    const motorcycleFormatted = {
+      id: deleted.id,
+      model: deleted.model,
+      year: deleted.year,
+      color: deleted.color,
+      status: deleted.status,
+      buyValue: deleted.buyValue,
+      category: deleted.category,
+      engineCapacity: deleted.engineCapacity,
     };
     return this.res.status(HTTP_200).json(motorcycleFormatted);
   }

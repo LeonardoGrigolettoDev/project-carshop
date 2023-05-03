@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import ICar from '../Interfaces/ICar';
 import CarService from '../Services/CarService';
 
+const INVALID_MONGO_ID = 'Invalid mongo id';
 const HTTP_201 = 201;
 const HTTP_200 = 200;
 const HTTP_404 = 404;
@@ -58,7 +59,7 @@ export default class CarController {
   public async findById() {
     const isValidId = this.service.isValidMongoId(this.req.params.id);
     if (!isValidId) {
-      return this.res.status(HTTP_422).json({ message: 'Invalid mongo id' });
+      return this.res.status(HTTP_422).json({ message: INVALID_MONGO_ID });
     }
     const foundCar = await this.service.findById(this.req.params.id);
     if (!foundCar) {
@@ -80,7 +81,7 @@ export default class CarController {
   public async findByIdAndUpdate() {
     const isValidId = this.service.isValidMongoId(this.req.params.id);
     if (!isValidId) {
-      return this.res.status(HTTP_422).json({ message: 'Invalid mongo id' });
+      return this.res.status(HTTP_422).json({ message: INVALID_MONGO_ID });
     }
     const carUpdated = await this.service.findByIdAndUpdate(
       this.req.params.id,
@@ -104,5 +105,14 @@ export default class CarController {
       seatsQty: carModified.seatsQty,
     };
     return this.res.status(HTTP_200).json(carFormatted);
+  }
+
+  public async deleteById() {
+    const isValidId = this.service.isValidMongoId(this.req.params.id);
+    if (!isValidId) {
+      return this.res.status(HTTP_422).json({ message: INVALID_MONGO_ID });
+    }
+    const deleted = await this.service.deleteById(this.req.params.id);
+    return this.res.status(HTTP_200).json(deleted);
   }
 }
