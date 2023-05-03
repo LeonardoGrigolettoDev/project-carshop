@@ -122,9 +122,32 @@ describe('Realiza testes nos componentes services de Car.', function () {
     };
     sinon.stub(Model, 'findByIdAndUpdate').resolves(carOutput);
     const service = new CarService();
-    const result = await service.findByIdAndUpdate('64527bf067bbd138daf07904', carBody);
+    const result = await service.findByIdAndUpdate(
+      '64527bf067bbd138daf07904',
+      carBody,
+    );
 
     expect(result).to.be.deep.equal(carOutput);
+  });
+  it('Deverá retornar o objeto que foi excluído corretamente.', async function () {
+    const carOutput = {
+      id: '64528fc2abbf977fafd0c9ab',
+      model: 'Hilux',
+      year: 1992,
+      color: 'Red',
+      status: true,
+      buyValue: 12,
+      doorsQty: 2,
+      seatsQty: 5,
+    };
+    sinon.stub(Model, 'findByIdAndDelete').resolves(carOutput);
+    const service = new CarService();
+    const result = await service.deleteById('64528fc2abbf977fafd0c9ab');
+
+    expect(result).to.be.deep.equal(carOutput);
+  });
+  afterEach(function () {
+    sinon.restore();
   });
 });
 

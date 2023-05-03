@@ -3,6 +3,7 @@ import ICar from '../Interfaces/ICar';
 import CarService from '../Services/CarService';
 
 const INVALID_MONGO_ID = 'Invalid mongo id';
+const CAR_NOT_FOUND = 'Car not found';
 const HTTP_201 = 201;
 const HTTP_200 = 200;
 const HTTP_404 = 404;
@@ -63,7 +64,7 @@ export default class CarController {
     }
     const foundCar = await this.service.findById(this.req.params.id);
     if (!foundCar) {
-      return this.res.status(HTTP_404).json({ message: 'Car not found' });
+      return this.res.status(HTTP_404).json({ message: CAR_NOT_FOUND });
     }
     const carFormatted = {
       id: foundCar.id,
@@ -88,7 +89,7 @@ export default class CarController {
       this.req.body,
     );
     if (!carUpdated) {
-      return this.res.status(HTTP_404).json({ message: 'Car not found' });
+      return this.res.status(HTTP_404).json({ message: CAR_NOT_FOUND });
     }
     const carModified = await this.service.findById(this.req.params.id);
     if (!carModified) {
@@ -113,6 +114,19 @@ export default class CarController {
       return this.res.status(HTTP_422).json({ message: INVALID_MONGO_ID });
     }
     const deleted = await this.service.deleteById(this.req.params.id);
-    return this.res.status(HTTP_200).json(deleted);
+    if (!deleted) {
+      return this.res.status(HTTP_404).json({ message: CAR_NOT_FOUND });
+    }
+    const carFormatted = {
+      id: deleted.id,
+      model: deleted.model,
+      year: deleted.year,
+      color: deleted.color,
+      status: deleted.status,
+      buyValue: deleted.buyValue,
+      doorsQty: deleted.doorsQty,
+      seatsQty: deleted.seatsQty,
+    };
+    return this.res.status(HTTP_200).json(carFormatted);
   }
 }
