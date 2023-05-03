@@ -3,7 +3,7 @@ import Car from '../Domains/Car';
 import ICar from '../Interfaces/ICar';
 import CarODM from '../Models/CarODM';
 
-export default class CarService {
+export default class CarService {  
   public isValidMongoId(_id: string): boolean { // validação do id para pesquisa
     return Types.ObjectId.isValid(_id);
   }
